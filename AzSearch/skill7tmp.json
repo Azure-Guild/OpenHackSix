@@ -1,0 +1,627 @@
+{
+    "name": "challenge7-skillset",
+    "description": "Skillset created from the portal. skillsetName: challenge7-skillset; contentField: merged_content; enrichmentGranularity: document; knowledgeStoreStorageAccount: margiecognitivesearch;",
+    "skills": [
+        {
+            "@odata.type": "#Microsoft.Skills.Text.V3.EntityRecognitionSkill",
+            "name": "#1",
+            "description": null,
+            "context": "/document/merged_content",
+            "categories": [
+                "Product",
+                "PhoneNumber",
+                "Person",
+                "Quantity",
+                "Organization",
+                "IPAddress",
+                "URL",
+                "Email",
+                "Event",
+                "Skill",
+                "Location",
+                "PersonType",
+                "Address",
+                "DateTime"
+            ],
+            "defaultLanguageCode": "en",
+            "minimumPrecision": null,
+            "modelVersion": null,
+            "inputs": [
+                {
+                    "name": "text",
+                    "source": "/document/merged_content",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "languageCode",
+                    "source": "/document/language",
+                    "sourceContext": null,
+                    "inputs": []
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "persons",
+                    "targetName": "people"
+                },
+                {
+                    "name": "organizations",
+                    "targetName": "organizations"
+                },
+                {
+                    "name": "locations",
+                    "targetName": "locations"
+                }
+            ]
+        },
+        {
+            "@odata.type": "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
+            "name": "#2",
+            "description": null,
+            "context": "/document/merged_content",
+            "defaultLanguageCode": "en",
+            "maxKeyPhraseCount": null,
+            "modelVersion": null,
+            "inputs": [
+                {
+                    "name": "text",
+                    "source": "/document/merged_content",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "languageCode",
+                    "source": "/document/language",
+                    "sourceContext": null,
+                    "inputs": []
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "keyPhrases",
+                    "targetName": "keyphrases"
+                }
+            ]
+        },
+        {
+            "@odata.type": "#Microsoft.Skills.Text.LanguageDetectionSkill",
+            "name": "#3",
+            "description": null,
+            "context": "/document",
+            "defaultCountryHint": null,
+            "modelVersion": null,
+            "inputs": [
+                {
+                    "name": "text",
+                    "source": "/document/merged_content",
+                    "sourceContext": null,
+                    "inputs": []
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "languageCode",
+                    "targetName": "language"
+                }
+            ]
+        },
+        {
+            "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
+            "name": "#4",
+            "description": null,
+            "context": "/document",
+            "insertPreTag": " ",
+            "insertPostTag": " ",
+            "inputs": [
+                {
+                    "name": "text",
+                    "source": "/document/content",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "itemsToInsert",
+                    "source": "/document/normalized_images/*/text",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "offsets",
+                    "source": "/document/normalized_images/*/contentOffset",
+                    "sourceContext": null,
+                    "inputs": []
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "mergedText",
+                    "targetName": "merged_content"
+                }
+            ]
+        },
+        {
+            "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
+            "name": "#5",
+            "description": null,
+            "context": "/document/normalized_images/*",
+            "textExtractionAlgorithm": null,
+            "lineEnding": "Space",
+            "defaultLanguageCode": "en",
+            "detectOrientation": true,
+            "inputs": [
+                {
+                    "name": "image",
+                    "source": "/document/normalized_images/*",
+                    "sourceContext": null,
+                    "inputs": []
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "text",
+                    "targetName": "text"
+                },
+                {
+                    "name": "layoutText",
+                    "targetName": "layoutText"
+                }
+            ]
+        },
+        {
+            "@odata.type": "#Microsoft.Skills.Vision.ImageAnalysisSkill",
+            "name": "#6",
+            "description": null,
+            "context": "/document/normalized_images/*",
+            "defaultLanguageCode": "en",
+            "visualFeatures": [
+                "tags",
+                "description"
+            ],
+            "details": [],
+            "inputs": [
+                {
+                    "name": "image",
+                    "source": "/document/normalized_images/*",
+                    "sourceContext": null,
+                    "inputs": []
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "tags",
+                    "targetName": "imageTags"
+                },
+                {
+                    "name": "description",
+                    "targetName": "imageCaption"
+                }
+            ]
+        },
+        {
+            "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
+            "name": "#7",
+            "description": null,
+            "context": "/document/normalized_images/*",
+            "inputs": [
+                {
+                    "name": "image",
+                    "source": null,
+                    "sourceContext": "/document/normalized_images/*",
+                    "inputs": [
+                        {
+                            "name": "width",
+                            "source": "/document/normalized_images/*/width",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "height",
+                            "source": "/document/normalized_images/*/height",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "originalWidth",
+                            "source": "/document/normalized_images/*/originalWidth",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "originalHeight",
+                            "source": "/document/normalized_images/*/originalHeight",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "text",
+                            "source": "/document/normalized_images/*/text",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "tags",
+                            "source": "/document/normalized_images/*/imageTags",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "description",
+                            "source": "/document/normalized_images/*/imageCaption",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "imgdata",
+                            "source": "/document/normalized_images/*",
+                            "sourceContext": null,
+                            "inputs": []
+                        }
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "output",
+                    "targetName": "imageprojection"
+                }
+            ]
+        },
+        {
+            "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
+            "name": "#8",
+            "description": null,
+            "context": "/document",
+            "inputs": [
+                {
+                    "name": "metadata_storage_content_type",
+                    "source": "/document/metadata_storage_content_type",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_size",
+                    "source": "/document/metadata_storage_size",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_last_modified",
+                    "source": "/document/metadata_storage_last_modified",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_content_md5",
+                    "source": "/document/metadata_storage_content_md5",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_name",
+                    "source": "/document/metadata_storage_name",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_path",
+                    "source": "/document/metadata_storage_path",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_file_extension",
+                    "source": "/document/metadata_storage_file_extension",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_content_type",
+                    "source": "/document/metadata_content_type",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_language",
+                    "source": "/document/metadata_language",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_author",
+                    "source": "/document/metadata_author",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_creation_date",
+                    "source": "/document/metadata_creation_date",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "merged_content",
+                    "source": "/document/merged_content",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "keyPhrases",
+                    "source": "/document/merged_content/keyphrases/*",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "languageCode",
+                    "source": "/document/language",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "Entities",
+                    "source": null,
+                    "sourceContext": "/document/merged_content/entities/*",
+                    "inputs": [
+                        {
+                            "name": "Entity",
+                            "source": "/document/merged_content/entities/*/name",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "EntityType",
+                            "source": "/document/merged_content/entities/*/type",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "EntitySubType",
+                            "source": "/document/merged_content/entities/*/subType",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "Url",
+                            "source": "/document/merged_content/entities/*/wikipediaUrl",
+                            "sourceContext": null,
+                            "inputs": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Images",
+                    "source": null,
+                    "sourceContext": "/document/normalized_images/*",
+                    "inputs": [
+                        {
+                            "name": "Images",
+                            "source": "/document/normalized_images/*/imageprojection/image",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "layoutText",
+                            "source": "/document/normalized_images/*/layoutText",
+                            "sourceContext": null,
+                            "inputs": []
+                        }
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "output",
+                    "targetName": "objectprojection"
+                }
+            ]
+        },
+        {
+            "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
+            "name": "#9",
+            "description": null,
+            "context": "/document",
+            "inputs": [
+                {
+                    "name": "metadata_storage_content_type",
+                    "source": "/document/metadata_storage_content_type",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_size",
+                    "source": "/document/metadata_storage_size",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_last_modified",
+                    "source": "/document/metadata_storage_last_modified",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_content_md5",
+                    "source": "/document/metadata_storage_content_md5",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_name",
+                    "source": "/document/metadata_storage_name",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_path",
+                    "source": "/document/metadata_storage_path",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_storage_file_extension",
+                    "source": "/document/metadata_storage_file_extension",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_content_type",
+                    "source": "/document/metadata_content_type",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_language",
+                    "source": "/document/metadata_language",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_author",
+                    "source": "/document/metadata_author",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "metadata_creation_date",
+                    "source": "/document/metadata_creation_date",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "merged_content",
+                    "source": "/document/merged_content",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "keyPhrases",
+                    "source": "/document/merged_content/keyphrases/*",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "languageCode",
+                    "source": "/document/language",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "name": "Entities",
+                    "source": null,
+                    "sourceContext": "/document/merged_content/entities/*",
+                    "inputs": [
+                        {
+                            "name": "Entity",
+                            "source": "/document/merged_content/entities/*/name",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "EntityType",
+                            "source": "/document/merged_content/entities/*/type",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "EntitySubType",
+                            "source": "/document/merged_content/entities/*/subType",
+                            "sourceContext": null,
+                            "inputs": []
+                        },
+                        {
+                            "name": "Url",
+                            "source": "/document/merged_content/entities/*/wikipediaUrl",
+                            "sourceContext": null,
+                            "inputs": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Images",
+                    "source": "/document/normalized_images/*/imageprojection/image",
+                    "sourceContext": null,
+                    "inputs": []
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "output",
+                    "targetName": "tableprojection"
+                }
+            ]
+        }
+    ],
+    "cognitiveServices": null,
+    "knowledgeStore": {
+        "storageConnectionString": "DefaultEndpointsProtocol=https;AccountName=margiecognitivesearch;AccountKey=2zzT8LhzSWd53+xgSUfT7mL40LWCf3d8Y07opWE2MctsNCl7X+WAZnPZyMbNBKfV0dMSRLvsoBkHMyo4lvGjFQ==;EndpointSuffix=core.windows.net",
+        "projections": [
+            {
+                "tables": [
+                    {
+                        "tableName": "challenge7SkillsetDocument",
+                        "referenceKeyName": null,
+                        "generatedKeyName": "Documentid",
+                        "source": "/document/tableprojection",
+                        "sourceContext": null,
+                        "inputs": []
+                    },
+                    {
+                        "tableName": "challenge7SkillsetKeyPhrases",
+                        "referenceKeyName": null,
+                        "generatedKeyName": "KeyPhrasesid",
+                        "source": null,
+                        "sourceContext": "/document/tableprojection/keyPhrases/*",
+                        "inputs": [
+                            {
+                                "name": "keyphrases",
+                                "source": "/document/tableprojection/keyPhrases/*",
+                                "sourceContext": null,
+                                "inputs": []
+                            }
+                        ]
+                    },
+                    {
+                        "tableName": "challenge7SkillsetEntities",
+                        "referenceKeyName": null,
+                        "generatedKeyName": "Entitiesid",
+                        "source": "/document/tableprojection/Entities/*",
+                        "sourceContext": null,
+                        "inputs": []
+                    },
+                    {
+                        "tableName": "challenge7SkillsetImages",
+                        "referenceKeyName": null,
+                        "generatedKeyName": "Imagesid",
+                        "source": "/document/tableprojection/Images/*",
+                        "sourceContext": null,
+                        "inputs": []
+                    }
+                ],
+                "objects": [
+                    {
+                        "storageContainer": "rawfiles",
+                        "referenceKeyName": null,
+                        "generatedKeyName": "rawfilesKey",
+                        "source": "/document/objectprojection",
+                        "sourceContext": null,
+                        "inputs": []
+                    }
+                ],
+                "files": [
+                    {
+                        "storageContainer": "challenge7-skillset-image-projection",
+                        "referenceKeyName": null,
+                        "generatedKeyName": "imagepath",
+                        "source": "/document/tableprojection/Images/*/imgdata",
+                        "sourceContext": null,
+                        "inputs": []
+                    }
+                ]
+            }
+        ],
+        "parameters": {
+            "synthesizeGeneratedKeyName": true
+        }
+    },
+    "encryptionKey": null
+}
